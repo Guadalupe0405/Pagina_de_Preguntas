@@ -1,8 +1,6 @@
-const PROXY_URL = "https://delicate-feather-9870.hemg050704.workers.dev/"; 
+const PROXY_URL = "https://delicate-feather-9870.hemg050704.workers.dev/";
 
-
-//FUNCIÓN PARA PEDIR PREGUNTA A GEMINI
-// ========================================
+// FUNCIÓN PARA PEDIR PREGUNTA A GEMINI
 async function respuestaAPI() {
   const prompt = `Genera una pregunta de opción múltiple sobre temas de Ingeniería en Computación.
   Incluye temas como arquitectura de computadoras, algoritmos, redes, inteligencia artificial o sistemas operativos.
@@ -24,18 +22,14 @@ async function respuestaAPI() {
     const response = await fetch(PROXY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }), // ✅ Mandamos el prompt al Worker
+      body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-
     const data = await response.json();
-
-    // El texto generado por Gemini
     const textResult = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!textResult) throw new Error("No se recibió texto de la API");
 
-    // Extraer el objeto JSON del texto
     const start = textResult.indexOf("{");
     const end = textResult.lastIndexOf("}");
     const res = JSON.parse(textResult.substring(start, end + 1));
@@ -47,9 +41,7 @@ async function respuestaAPI() {
   }
 }
 
-
 // MOSTRAR PREGUNTA EN PANTALLA
-// ========================================
 function desplegar(jsonObj) {
   const questionText = document.getElementById("question-text");
   const options = document.getElementById("options-container");
@@ -85,11 +77,9 @@ function desplegar(jsonObj) {
   });
 }
 
-
-//CARGAR NUEVA PREGUNTA
-// ========================================
+// CARGAR NUEVA PREGUNTA
 async function loadNewQuestion() {
-  document.getElementById("question-text").innerHTML = "Cargando pregunta...";
+  document.getElementById("question-text").innerHTML = "🔄 Cargando pregunta...";
   document.getElementById("options-container").innerHTML = "";
   document.getElementById("explanation-text").innerHTML = "";
   document.getElementById("next-button").style.display = "none";
@@ -99,11 +89,11 @@ async function loadNewQuestion() {
   if (data.result === 1) {
     desplegar(data.response);
   } else {
-    document.getElementById("question-text").innerHTML = "Error al cargar la pregunta 😞";
+    document.getElementById("question-text").innerHTML = "⚠️ Error al cargar la pregunta";
   }
 }
 
- //PUNTAJE (LocalStorage)
+// SISTEMA DE PUNTAJE
 function updateScore(type) {
   const correctCount = document.getElementById("correct-count");
   const incorrectCount = document.getElementById("incorrect-count");
@@ -134,6 +124,6 @@ function resetScore() {
   }
 }
 
-// INICIALIZAR AL CARGAR LA PÁGINA
+// INICIALIZACIÓN
 loadScore();
 loadNewQuestion();
